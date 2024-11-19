@@ -1,0 +1,42 @@
+name: 'Analyze Pull Request with ChatGPT'
+description: 'This action automates the process of reviewing code from GitHub pull-requests using OpenAIs ChatGPT.'
+author: 'Danijel Dragicevic'
+
+inputs:
+  OPENAI_API_KEY:
+    description: 'OpenAI API key'
+    required: true
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
+  REPOSITORY:
+    description: 'GitHub repository'
+    required: true
+  PR_NUMBER:
+    description: 'Pull request number'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Fetch all history for git blame analysis
+
+    - name: Extract PR diff
+      run: git diff ${{  github.event.pull_request.base.sha  }} ${{  github.event.pull_request.head.sha  }} > pr_diff.txt  # generates a diff file that contains the differences between the base and head commits of the pull request.
+      shell: bash
+
+    - name: Make script executable
+      run: chmod +x ${{ github.action_path }}/scripts/analyze-code.sh
+      shell: bash
+
+    - name: Analyze code with ChatGPT
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPOSITORY: ${{ github.repository }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: ${{ github.action_path }}/scripts/analyze-code.sh $OPENAI_API_KEY $GITHUB_TOKEN $REPOSITORY $PR_NUMBER
+      shell: bash
