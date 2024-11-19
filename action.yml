@@ -34,9 +34,9 @@ runs:
 
     - name: Analyze code with ChatGPT
       env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPOSITORY: ${{ github.repository }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        REPOSITORY: ${{ inputs.REPOSITORY }}
+        PR_NUMBER: ${{ inputs.PR_NUMBER }}
       run: ${{ github.action_path }}/scripts/analyze-code.sh $OPENAI_API_KEY $GITHUB_TOKEN $REPOSITORY $PR_NUMBER
       shell: bash
