@@ -5,7 +5,7 @@ load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
 
 # Path to the script to test
-SCRIPT_PATH="./scripts/analyze-code.sh"
+SCRIPT_PATH="../scripts/analyze-code.sh"
 
 # Source the script to make the functions available
 source "$SCRIPT_PATH"
@@ -28,4 +28,23 @@ source "$SCRIPT_PATH"
   # Assert the output
   [ "$status" -ne 0 ]
   [[ "$output" == *"Error: Missing required input parameters."* ]]
+}
+
+# Test: Validate prepare_prompt function
+@test "prepare_prompt function correctly combines instructions and diff content" {
+  # Create a mock pr_diff.txt file
+  echo "Mock diff content" > pr_diff.txt
+
+  # Call the function
+  run prepare_prompt
+
+  # Expected output
+  expected_output="Based on the code diff below, please provide a summary of the major insights derived. Also, check for any potential issues or improvements. The response should be a concise summary without any additional formatting, markdown, or characters outside the summary text.\n\nMock diff content"
+
+  # Assert the output
+  [ "$status" -eq 0 ]
+  [[ "$output" == "$expected_output" ]]
+
+  # Clean up
+  rm pr_diff.txt
 }
