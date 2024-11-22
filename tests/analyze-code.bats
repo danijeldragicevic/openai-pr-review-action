@@ -48,3 +48,61 @@ source "$SCRIPT_PATH"
   # Clean up
   rm pr_diff.txt
 }
+
+# Test: Validate call_openai_api function
+@test "call_openai_api function sends the correct request and receives a response" {
+  # Mock OpenAI API key and prompt
+  local openai_api_key="test-api-key"
+  local full_prompt="Test prompt for OpenAI API"
+
+  # Mock the expected response from the OpenAI API
+  local mock_response='{
+    "choices": [
+      {
+        "message": {
+          "content": "Test response from OpenAI API"
+        }
+      }
+    ]
+  }'
+
+  # Mock the curl command to return the mock response
+  function curl() {
+    echo "$mock_response"
+  }
+
+  # Call the function
+  run call_openai_api "$openai_api_key" "$full_prompt"
+
+  # Assert the output
+  [ "$status" -eq 0 ]
+  [[ "$output" == "$mock_response" ]]
+}
+
+# Test: Validate call_openai_api function handles API failure
+@test "call_openai_api function handles API failure" {
+  # Mock OpenAI API key and prompt
+  local openai_api_key="test-api-key"
+  local full_prompt="Test prompt for OpenAI API"
+
+  # Mock the expected error response from the OpenAI API
+  local mock_error_response='{
+    "error": {
+      "message": "Invalid API key",
+      "type": "authentication_error"
+    }
+  }'
+
+  # Mock the curl command to return the mock error response
+  function curl() {
+    echo "$mock_error_response"
+    return 1
+  }
+
+  # Call the function
+  run call_openai_api "$openai_api_key" "$full_prompt"
+
+  # Assert the output
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"Invalid API key"* ]]
+}
