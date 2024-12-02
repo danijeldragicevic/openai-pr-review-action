@@ -10,10 +10,10 @@ source "./scripts/analyze-code.sh"
 # Test: Validate input initialization
 @test "initialize_inputs_success" {
   # Call the function
-  run  initialize_inputs "test-key" "test-token" "test/repo" "123" "tmp/pr_diff.txt" "gpt-3.5-turbo" "500"
+  run  initialize_inputs "test-key" "test-token" "test/repo" "123" "tmp/pr_diff.txt" "gpt-4o-mini" "500"
 
   # Expected output
-  expected_output="test-key,test-token,test/repo,123,tmp/pr_diff.txt,gpt-3.5-turbo,500"
+  expected_output="test-key,test-token,test/repo,123,tmp/pr_diff.txt,gpt-4o-mini,500"
 
   # Assert the output
   [ "$status" -eq 0 ] || fail "Expected status 0, got $status"
@@ -91,7 +91,7 @@ Mock diff content"
   # Mock OpenAI API key and prompt
   local openai_api_key="test-api-key"
   local full_prompt="Test prompt for OpenAI API"
-  local gpt_model="gpt-3.5-turbo"
+  local gpt_model="gpt-4o-mini"
   local max_tokens="500"
 
   # Mock response from the OpenAI API
@@ -123,7 +123,7 @@ Mock diff content"
   # Mock OpenAI API key and prompt
   local openai_api_key="test-api-key"
   local full_prompt="Test prompt for OpenAI API"
-  local gpt_model="gpt-3.5-turbo"
+  local gpt_model="gpt-4o-mini"
   local max_tokens="500"
 
   # Mock response from the OpenAI API

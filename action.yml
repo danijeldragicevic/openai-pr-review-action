@@ -1,5 +1,5 @@
-name: 'Analyze Pull Request with ChatGPT'
-description: 'This action automates the process of reviewing code from GitHub pull-requests using OpenAIs ChatGPT.'
+name: 'Analyze Pull Request with OpenAI'
+description: 'This action automates the process of reviewing code from GitHub pull-requests using OpenAI API.'
 author: 'Danijel Dragicevic'
 
 inputs:
@@ -18,7 +18,7 @@ inputs:
   GPT_MODEL:
     description: 'GPT model to use'
     required: false
-    default: 'gpt-3.5-turbo'
+    default: 'gpt-4o-mini'
   MAX_TOKENS:
     description: 'Maximum tokens to generate'
     required: false
@@ -41,7 +41,7 @@ runs:
       run: chmod +x ${{ github.action_path }}/scripts/analyze-code.sh
       shell: bash
 
-    - name: Analyze code with ChatGPT
+    - name: Analyze code with OpenAI
       env:
         OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
