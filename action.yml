@@ -1,0 +1,56 @@
+name: 'Analyze Pull Request with ChatGPT'
+description: 'This action automates the process of reviewing code from GitHub pull-requests using OpenAIs ChatGPT.'
+author: 'Danijel Dragicevic'
+
+inputs:
+  OPENAI_API_KEY:
+    description: 'OpenAI API key'
+    required: true
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
+  REPOSITORY:
+    description: 'GitHub repository'
+    required: true
+  PR_NUMBER:
+    description: 'Pull request number'
+    required: true
+  GPT_MODEL:
+    description: 'GPT model to use'
+    required: false
+    default: 'gpt-3.5-turbo'
+  MAX_TOKENS:
+    description: 'Maximum tokens to generate'
+    required: false
+    default: '500'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create temp directory
+      run: mkdir -p ${{ github.action_path }}/tmp
+      shell: bash
+
+    - name: Extract PR diff
+      run: |
+        git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > ${{ github.action_path }}/tmp/pr_diff.txt
+        echo "DIFF_FILE_PATH=${{ github.action_path }}/tmp/pr_diff.txt" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Make script executable
+      run: chmod +x ${{ github.action_path }}/scripts/analyze-code.sh
+      shell: bash
+
+    - name: Analyze code with ChatGPT
+      env:
+        OPENAI_API_KEY: ${{ inputs.OPENAI_API_KEY }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        REPOSITORY: ${{ inputs.REPOSITORY }}
+        PR_NUMBER: ${{ inputs.PR_NUMBER }}
+        DIFF_FILE_PATH: ${{ env.DIFF_FILE_PATH }}
+        GPT_MODEL: ${{ inputs.GPT_MODEL }}
+        MAX_TOKENS: ${{ inputs.MAX_TOKENS }}
+      run: ${{ github.action_path }}/scripts/analyze-code.sh \ 
+        $OPENAI_API_KEY $GITHUB_TOKEN $REPOSITORY $PR_NUMBER \ 
+        $DIFF_FILE_PATH $GPT_MODEL $MAX_TOKENS
+      shell: bash
